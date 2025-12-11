@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>debug</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 h-screen flex items-center justify-center">
+
+    <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full">
+        <h2 class="text-2xl text-green-600 font-bold mb-4">Dati test DB:</h2>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-left text-sm">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-3">ID Domanda</th>
+                        <th class="p-3">Domanda</th>
+                        <th class="p-3">Valore scelto</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for r in risultati %}
+                    <tr>
+                        <td class="p-3 font-mono text-blue-600">{{ r.id }}</td>
+                        <td class="p-3 text-gray-700">{{ r.text }}</td>
+                        <td class="p-3 font-bold">{{ r.risposta }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <a href="/" class="block mt-6 text-center text-blue-500 hover:underline">Torna indietro</a>
+    </div>
+
+</body>
+</html>

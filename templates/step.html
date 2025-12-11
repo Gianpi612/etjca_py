@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IL SONDAGGIO {{ idx + 1 }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden">
+        
+        <div class="w-full bg-gray-200 h-2">
+            <div class="bg-blue-600 h-2 transition-all duration-500" style="width: {{ progresso }}%"></div>
+        </div>
+
+        <div class="p-8">
+            <div class="mb-6 flex justify-between items-center text-gray-500 text-sm font-semibold uppercase tracking-wide">
+                <span>Domanda {{ idx + 1 }} di {{ totale }}</span>
+                <span>{{ progresso }}% Completato</span>
+            </div>
+
+            <h2 class="text-2xl font-bold text-gray-800 mb-8">{{ domanda.text }}</h2>
+
+            <form method="POST">
+                <div class="space-y-4">
+                    {% for opzione in opzioni %}
+                    <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all group">
+                        <input type="radio" 
+                               name="risposta" 
+                               value="{{ opzione.valore }}" 
+                               required
+                               class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                        <span class="ml-3 text-gray-700 font-medium group-hover:text-blue-700">{{ opzione.label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform transition hover:scale-105 duration-200">
+                        {% if idx + 1 == totale %}
+                            Concludi sondaggio
+                        {% else %}
+                            Prossima domanda &rarr;
+                        {% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
