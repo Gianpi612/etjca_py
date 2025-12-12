@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
+import csv
 
 app = Flask(__name__)
 app.secret_key = 'sdfjodfghdfgh'
@@ -25,7 +26,6 @@ OPZIONI = [
 @app.route('/')
 def intro():
     # pulisce la sessione per un nuovo utente
-    # se non vogliamo risposte duplicate bisognerà trovare un modo
     session.clear()
     session['risposte'] = {}
     return render_template('intro.html')
@@ -66,9 +66,6 @@ def step(idx):
 def fine():
     dati_finali = session.get('risposte', {})
     print(DOMANDE)
-
-    # --- SALVARE NEL DB ---
-
     summary = []
     for d in DOMANDE:
         summary.append({
@@ -76,9 +73,12 @@ def fine():
             "text": d['text'],
             "risposta": dati_finali.get(d['id'])
         })
-        print(dati_finali)
-
-        
+    print(summary)
+    with open("output.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["id", "text", "risposta"])
+        writer.writeheader()
+        writer.writerows(summary)
+    
     return render_template('success.html', risultati=summary)
 
 if __name__ == '__main__':
