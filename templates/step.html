@@ -28,23 +28,40 @@
                     <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all group">
                         <input type="radio" 
                                name="risposta" 
-                               value="{{ opzione.valore }}" 
+                               value="{{ opzione.valore }}"
+                               {% if session['risposte'].get(domanda.id) == opzione.valore %}checked{% endif %}
                                required
                                class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+
                         <span class="ml-3 text-gray-700 font-medium group-hover:text-blue-700">{{ opzione.label }}</span>
                     </label>
                     {% endfor %}
                 </div>
 
-                <div class="mt-8 flex justify-end">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform transition hover:scale-105 duration-200">
+                <div class="mt-8 flex justify-between">
+
+                    {% if idx > 0 %}
+                    <button name="action" value="back"
+                            class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-8 rounded-lg shadow-lg transform transition hover:scale-105 duration-200">
+                        ← Indietro
+                    </button>
+                    {% else %}
+                    <span></span>
+                    {% endif %}
+                
+                    <button name="action" value="next"
+                            type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform transition hover:scale-105 duration-200">
                         {% if idx + 1 == totale %}
                             Concludi sondaggio
                         {% else %}
-                            Prossima domanda &rarr;
+                            Prossima domanda →
                         {% endif %}
                     </button>
+                
                 </div>
+
+
             </form>
         </div>
     </div>

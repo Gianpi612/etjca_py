@@ -5,22 +5,22 @@ app = Flask(__name__)
 app.secret_key = 'sdfjodfghdfgh'
 
 DOMANDE = [
-    {"id": "q1", "text": "domanda test 1."},
-    {"id": "q2", "text": "domanda tst 2."},
-    {"id": "q3", "text": "domanda test 3."},
-    {"id": "q4", "text": "domanda test 4."},
-    {"id": "q5", "text": "domanda test 5."},
-    {"id": "q6", "text": "domanda test 6."},
-    {"id": "q7", "text": "domanda test 7."},
-    {"id": "q8", "text": "domanda test 8."},
+    {"id": "q1", "text": "Ritengo di avere ben chiaro chi sono professionalmente."},
+    {"id": "q2", "text": "Le parole che uso per descrivermi al lavoro sono coerenti con ciò che faccio."},
+    {"id": "q3", "text": "Mi è facile definire il mio stile professionale."},
+    {"id": "q4", "text": "Conosco molto bene i miei punti di forza."},
+    {"id": "q5", "text": "Ho identificato chiaramente le competenze che devo sviluppare."},
+    {"id": "q6", "text": "Sto già investendo tempo per imparare nuove skill."},
+    {"id": "q7", "text": "Ho chiaro come voglio essere percepito professionalmente."},
+    {"id": "q8", "text": "Mi preparo regolarmente per i colloqui."},
 ]
 
 OPZIONI = [
-    {"valore": "molto_daccordo", "label": "Molto d'accordo"},
-    {"valore": "daccordo", "label": "D'accordo"},
-    {"valore": "neutrale", "label": "Neutrale"},
-    {"valore": "disaccordo", "label": "In disaccordo"},
-    {"valore": "molto_disaccordo", "label": "Molto in disaccordo"}
+    {"valore": "molto_daccordo", "label": "5"},
+    {"valore": "daccordo", "label": "4"},
+    {"valore": "neutrale", "label": "3"},
+    {"valore": "disaccordo", "label": "2"},
+    {"valore": "molto_disaccordo", "label": "1"}
 ]
 
 @app.route('/')
@@ -40,27 +40,37 @@ def step(idx):
 
     if request.method == 'POST':
         risposta = request.form.get('risposta')
+        action = request.form.get('action')
+
+        # Salva sempre la risposta se presente
         risposte_temp = session.get('risposte', {})
-        risposte_temp[domanda_corrente['id']] = risposta
-        session['risposte'] = risposte_temp
+        if risposta:
+            risposte_temp[domanda_corrente['id']] = risposta
+            session['risposte'] = risposte_temp
+
+        # Pulsante "Indietro"
+        if action == "back":
+            return redirect(url_for('step', idx=idx - 1))
+
+        # Pulsante "Avanti"
         next_idx = idx + 1
         if next_idx < len(DOMANDE):
             return redirect(url_for('step', idx=next_idx))
         else:
-            # Se le domande sono finite, vai al salvataggio finale
             return redirect(url_for('fine'))
 
-    # calcolo progresso 
+    # GET → visualizzazione domanda
     progresso = int((idx / len(DOMANDE)) * 100)
-    
+
     return render_template(
-        'step.html', 
-        domanda=domanda_corrente, 
-        opzioni=OPZIONI, 
-        idx=idx, 
+        'step.html',
+        domanda=domanda_corrente,
+        opzioni=OPZIONI,
+        idx=idx,
         totale=len(DOMANDE),
         progresso=progresso
     )
+
 
 @app.route('/fine')
 def fine():
