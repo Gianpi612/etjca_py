@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import csv
+import os
 
 app = Flask(__name__)
 app.secret_key = 'sdfjodfghdfgh'
@@ -84,9 +85,15 @@ def fine():
             "risposta": dati_finali.get(d['id'])
         })
     print(summary)
-    with open("output.csv", "w", newline="", encoding="utf-8") as f:
+
+    file_exists = os.path.isfile("output.csv")
+
+    with open("output.csv", "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=["id", "text", "risposta"])
-        writer.writeheader()
+        
+        if not file_exists:
+            writer.writeheader()
+        
         writer.writerows(summary)
     
     return render_template('success.html', risultati=summary)
