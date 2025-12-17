@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div class="max-w-6xl mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6">Dashboard Admin</h1>
+
+        {% if dati %}
+        <div class="overflow-x-auto bg-white shadow rounded-lg">
+            <table class="min-w-full text-sm text-left">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-4 py-3 font-semibold">ID</th>
+                        <th class="px-4 py-3 font-semibold">Domanda</th>
+                        <th class="px-4 py-3 font-semibold">Risposta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in dati %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-2">{{ r.id }}</td>
+                        <td class="px-4 py-2">{{ r.text }}</td>
+                        <td class="px-4 py-2 font-medium text-blue-700">{{ r.risposta }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-gray-600">Nessun dato disponibile.</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

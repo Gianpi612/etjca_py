@@ -53,6 +53,18 @@ def step(idx):
         progresso=progresso
     )
 
+@app.route('/admin')
+def admin():
+    dati = []
+
+    if os.path.isfile("output.csv"):
+        with open("output.csv", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                dati.append(row)
+
+    return render_template("admin.html", dati=dati)
+
 
 @app.route('/fine')
 def fine():

@@ -1,44 +1,125 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>debug</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Grazie — Questionario completato</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{
+      --indigo: #4F46E5;
+      --muted: #64748b;
+      --bg-1: #eef2ff;
+      --bg-2: #e6f7ff;
+    }
+
+    /* Animazioni */
+    @keyframes pop {
+      0%   { transform: scale(.4); opacity: 0; }
+      60%  { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes confettiFall {
+      0%   { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 1; }
+    }
+
+    .heart-pop { animation: pop .6s cubic-bezier(.2,.9,.2,1) both; }
+    .fade-in-up { transform: translateY(8px); opacity: 0; transition: transform .5s cubic-bezier(.2,.9,.2,1), opacity .5s; }
+    .fade-in-up.show { transform: translateY(0); opacity: 1; }
+
+    .confetti {
+      position: absolute;
+      top: -10vh;
+      width: 10px; height: 14px;
+      opacity: 0;
+      animation-name: confettiFall;
+      animation-duration: 2200ms;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+
+    .underline-accent {
+      display: inline-block;
+      height: 6px;
+      width: 70px;
+      background: linear-gradient(90deg, rgba(79,70,229,.12), rgba(6,182,212,.12));
+      border-radius: 999px;
+      margin-top: 8px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .heart-pop, .fade-in-up, .confetti { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+    }
+  </style>
 </head>
-<body class="bg-gray-100 h-screen flex items-center justify-center">
-    <div class="text-center">
-        <h1 class="text-4xl font-bold mb-4">Questionario concluso</h1>
-        <p class="text-gray-600 mb-8">Grazie per il tuo tempo.</p>
+<body class="h-screen bg-gradient-to-br from-[var(--bg-1)] via-white to-[var(--bg-2)] flex flex-col items-center justify-center text-center px-6">
+
+  <!-- confetti container -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden">
+    <div class="confetti" style="left:10%; background:#F97316; animation-delay:.1s; animation-duration:2400ms;"></div>
+    <div class="confetti" style="left:22%; background:#06B6D4; animation-delay:.25s; animation-duration:2200ms;"></div>
+    <div class="confetti" style="left:36%; background:#F43F5E; animation-delay:.15s; animation-duration:2300ms;"></div>
+    <div class="confetti" style="left:50%; background:#8B5CF6; animation-delay:.3s; animation-duration:2000ms;"></div>
+    <div class="confetti" style="left:64%; background:#10B981; animation-delay:.2s; animation-duration:2500ms;"></div>
+    <div class="confetti" style="left:78%; background:#F59E0B; animation-delay:.12s; animation-duration:2100ms;"></div>
+  </div>
+
+  <main class="relative max-w-2xl w-full flex flex-col items-center">
+
+    <!-- cuore -->
+    <div id="heartWrap" class="mb-6 flex justify-center">
+      <svg id="heart" class="w-24 h-24 text-[var(--indigo)]" viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Cuore">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
     </div>
+
+    <!-- Grazie -->
+    <h1 id="thanksHeading" class="text-5xl sm:text-6xl font-extrabold text-[var(--indigo)] leading-tight mb-3 fade-in-up">
+      Grazie.
+    </h1>
+
+    <!-- underline decorativa -->
+    <div id="underline" class="mx-auto underline-accent opacity-0" style="transition:opacity .45s ease, transform .45s ease;"></div>
+
+    <!-- testo descrittivo -->
+    <p id="thanksText" class="mt-6 text-lg text-[var(--muted)] max-w-2xl mx-auto fade-in-up" style="transition-delay:.05s;">
+      Il tuo contributo è prezioso. Le risposte saranno analizzate in forma aggregata per comprendere meglio l’impatto dei nostri corsi e migliorare i programmi futuri.
+    </p>
+
+    <!-- pulsante home -->
+    <div id="actions" class="mt-8 opacity-0" style="transition:opacity .45s ease;">
+      <a href="/" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--indigo)] text-white font-semibold shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition">
+        Torna alla homepage
+      </a>
+    </div>
+
+  </main>
+
+  <script>
+    (function () {
+      const heart = document.getElementById('heart');
+      const heading = document.getElementById('thanksHeading');
+      const underline = document.getElementById('underline');
+      const text = document.getElementById('thanksText');
+      const actions = document.getElementById('actions');
+      const confettis = document.querySelectorAll('.confetti');
+
+      setTimeout(() => heart.classList.add('heart-pop'), 150);
+      setTimeout(() => heading.classList.add('show'), 450);
+      setTimeout(() => underline.style.opacity = '1', 650);
+      setTimeout(() => text.classList.add('show'), 800);
+      setTimeout(() => actions.style.opacity = '1', 1100);
+
+      confettis.forEach((el, i) => {
+        const delay = 300 + i * 80;
+        el.style.animationDelay = (delay) + 'ms';
+      });
+
+      setTimeout(() => confettis.forEach(el => el.remove()), 4000);
+    })();
+  </script>
 </body>
-<!--<body class="bg-gray-50 h-screen flex items-center justify-center">
-
-    <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full">
-        <h2 class="text-2xl text-green-600 font-bold mb-4">Dati test DB:</h2>
-
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-left text-sm">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="p-3">ID Domanda</th>
-                        <th class="p-3">Domanda</th>
-                        <th class="p-3">Valore scelto</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                    {% for r in risultati %}
-                    <tr>
-                        <td class="p-3 font-mono text-blue-600">{{ r.id }}</td>
-                        <td class="p-3 text-gray-700">{{ r.text }}</td>
-                        <td class="p-3 font-bold">{{ r.risposta }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        <a href="/" class="block mt-6 text-center text-blue-500 hover:underline">Torna indietro</a>
-    </div>
-
-</body>-->
 </html>
