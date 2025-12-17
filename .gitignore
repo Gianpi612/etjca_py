@@ -9,3 +9,4 @@ ruff_cache/
 **/.ruff_cache/
 
 output.csv
+**/test/
