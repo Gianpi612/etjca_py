@@ -29,6 +29,17 @@ DOMANDE = [
         ]
     },
     {
+        "id": "q_titolo",
+        "text": "Indica il tuo titolo di studio:",
+        "opzioni": [
+            {"valore": "diploma", "label": "Diploma di Maturità"},
+            {"valore": "laurea_triennale", "label": "Laurea Triennale"},
+            {"valore": "triennale_master", "label": "Laurea Triennale + Master di I Livello"},
+            {"valore": "laurea_magistrale", "label": "Laurea Magistrale / Ciclo Unico"},
+            {"valore": "post_magistrale", "label": "Titolo Post-Magistrale (Master II livello, Dottorato, Specializzazione)"}
+            ]
+    },
+    {
         "id": "q4",
         "text": "Ritengo di avere ben chiaro chi sono professionalmente.",
         "opzioni": [
