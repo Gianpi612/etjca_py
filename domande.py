@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 DOMANDE = [
     {
         "id": "q1",
@@ -11,20 +13,19 @@ DOMANDE = [
     },
     {
         "id": "q2",
-        "text": "In quale area d’Italia risiedi?",
+        "text": "In quale area d'Italia risiedi?",
         "opzioni": [
             {"valore": "sud", "label": "Sud"},
             {"valore": "centro", "label": "Centro"},
             {"valore": "nord", "label": "Nord"},
         ]
     },
-
     {
         "id": "q3",
-        "text": "A quale fascia di età appartieni?:",
+        "text": "A quale fascia di età appartieni?",
         "opzioni": [
-            {"valore": "18–30", "label": "18–30 anni"},
-            {"valore": "30-50", "label": "30–50 anni"},
+            {"valore": "18-30", "label": "18-30 anni"},
+            {"valore": "30-50", "label": "30-50 anni"},
             {"valore": "50+", "label": "Oltre 50 anni"}
         ]
     },
@@ -37,7 +38,7 @@ DOMANDE = [
             {"valore": "triennale_master", "label": "Laurea Triennale + Master di I Livello"},
             {"valore": "laurea_magistrale", "label": "Laurea Magistrale / Ciclo Unico"},
             {"valore": "post_magistrale", "label": "Titolo Post-Magistrale (Master II livello, Dottorato, Specializzazione)"}
-            ]
+        ]
     },
     {
         "id": "q4",
@@ -122,7 +123,7 @@ DOMANDE = [
     },
     {
         "id": "q13",
-        "text": "Pensi che all’interno del corso sarebbe utile fare un percorso con un HR?",
+        "text": "Pensi che all'interno del corso sarebbe utile fare un percorso con un HR?",
         "opzioni": [
             {"valore": "si", "label": "Sì"},
             {"valore": "no", "label": "No"},

@@ -80,14 +80,23 @@ def admin():
         return redirect(url_for('admin_login'))
     
     dati = []
+    dati_uploaded = []  # new
 
+    # Leggi dati raccolti dal questionario
     if os.path.isfile("output.csv"):
-        with open("output.csv", newline="", encoding="utf-8") as f:
+        with open("output.csv", newline="", encoding="utf-8-sig") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 dati.append(row)
 
-    return render_template("admin.html", dati=dati)
+    # Leggi dataset caricato (se esiste) ##new
+    if os.path.isfile("uploaded_dataset.csv"):
+        with open("uploaded_dataset.csv", newline="", encoding="utf-8-sig") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                dati_uploaded.append(row)
+
+    return render_template("admin.html", dati=dati, dati_uploaded=dati_uploaded)
 
 @app.route('/admin-logout')
 def admin_logout():
@@ -103,6 +112,36 @@ def reset_data():
     # Cancella il file CSV
     if os.path.isfile("output.csv"):
         os.remove("output.csv")
+    
+    return redirect(url_for('admin'))
+
+@app.route('/upload-dataset', methods=['POST'])
+def upload_dataset():
+    # Controlla se l'admin è loggato
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    if 'dataset' not in request.files:
+        return redirect(url_for('admin'))
+    
+    file = request.files['dataset']
+    
+    if file.filename == '':
+        return redirect(url_for('admin'))
+    
+    if file and file.filename.endswith('.csv'):
+        file.save('uploaded_dataset.csv')
+    
+    return redirect(url_for('admin'))
+
+@app.route('/delete-dataset', methods=['POST'])
+def delete_dataset():
+    # Controlla se l'admin è loggato
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    if os.path.isfile("uploaded_dataset.csv"):
+        os.remove("uploaded_dataset.csv")
     
     return redirect(url_for('admin'))
 

@@ -47,6 +47,21 @@
 
     <div class="max-w-7xl mx-auto px-6 py-8">
 
+        <!-- Tab Navigation -->
+        <div class="mb-8">
+            <div class="flex gap-4 border-b border-slate-200">
+                <button onclick="showTab('risposte')" id="tab-risposte" class="tab-button px-6 py-3 font-semibold text-indigo-600 border-b-2 border-indigo-600">
+                    📊 Risposte Raccolte
+                </button>
+                <button onclick="showTab('dataset')" id="tab-dataset" class="tab-button px-6 py-3 font-semibold text-slate-500 hover:text-indigo-600">
+                    📁 Dataset Caricato
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 1: Risposte Raccolte -->
+        <div id="content-risposte" class="tab-content">
+
         <!-- Statistiche -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- Totale Risposte -->
@@ -103,7 +118,7 @@
             <!-- Sezione: Dati Demografici -->
             <div class="mb-6">
                 <h3 class="text-lg font-semibold text-indigo-600 mb-4">📊 Dati Demografici</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                         <h4 class="text-md font-semibold text-slate-800 mb-4">Genere</h4>
@@ -123,6 +138,13 @@
                         <h4 class="text-md font-semibold text-slate-800 mb-4">Fascia d'Età</h4>
                         <div class="chart-container">
                             <canvas id="chart_q3"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                        <h4 class="text-md font-semibold text-slate-800 mb-4">Titolo di Studio</h4>
+                        <div class="chart-container">
+                            <canvas id="chart_q_titolo"></canvas>
                         </div>
                     </div>
 
@@ -286,122 +308,275 @@
         </div>
         {% endif %}
 
+        </div>
+        <!-- Fine TAB 1: Risposte Raccolte -->
+
+        <!-- TAB 2: Dataset Caricato -->
+        <div id="content-dataset" class="tab-content hidden">
+
+            <!-- Upload Section -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Carica Dataset Esterno</h2>
+                        <p class="text-sm text-slate-600 mt-1">Carica un CSV con le stesse colonne per analisi comparativa</p>
+                    </div>
+                    {% if dati_uploaded %}
+                    <form method="POST" action="/delete-dataset" class="inline">
+                        <button type="submit" class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-semibold transition">
+                            🗑️ Elimina Dataset
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                <form method="POST" action="/upload-dataset" enctype="multipart/form-data" class="flex gap-4 items-end">
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Seleziona File CSV
+                        </label>
+                        <input 
+                            type="file" 
+                            name="dataset" 
+                            accept=".csv"
+                            required
+                            class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition outline-none"
+                        >
+                    </div>
+                    <button 
+                        type="submit"
+                        class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition"
+                    >
+                        📤 Carica
+                    </button>
+                </form>
+
+                <div class="mt-4 text-xs text-slate-500">
+                    <strong>Formato richiesto:</strong> CSV con colonne: q1, q2, q3, q_titolo, q4, q5, ..., q15 (una riga per utente)
+                </div>
+            </div>
+
+            <!-- Statistiche Dataset Caricato -->
+            {% if dati_uploaded %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-600 font-semibold">Totale Record</p>
+                            <p class="text-3xl font-bold text-slate-800 mt-2">{{ dati_uploaded|length }}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-600 font-semibold">Stato Dataset</p>
+                            <p class="text-lg font-bold text-emerald-600 mt-2">Caricato</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-600 font-semibold">Tipo</p>
+                            <p class="text-lg font-bold text-slate-700 mt-2">Dataset Esterno</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grafici Dataset -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Analisi Dataset Caricato</h2>
+                
+                <!-- Sezione: Dati Demografici -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-indigo-600 mb-4">📊 Dati Demografici</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Genere</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q1"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Area Italia</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q2"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Fascia d'Età</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q3"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Titolo di Studio</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q_titolo"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Sezione: Autoconsapevolezza -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-indigo-600 mb-4">🎯 Autoconsapevolezza Professionale</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q4: Chiaro chi sono professionalmente</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q4"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q5: Conosco i miei punti di forza</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q5"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q6: Lavoro per colmare lacune</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q6"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q7: Lavoro deve rispecchiare valori</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q7"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Sezione: Obiettivi e Competenze -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-indigo-600 mb-4">💼 Obiettivi e Competenze</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q8: Obiettivi professionali chiari</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q8"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q9: Competenze tecniche</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q9"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q10: Soft skills</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q10"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q11: Investo tempo in nuove skill</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q11"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Sezione: Ricerca Lavoro -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-indigo-600 mb-4">🔍 Ricerca Lavoro e Supporto</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q12: Esploro opportunità nel settore</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q12"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q13: Utile percorso con HR</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q13"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q14: Monitoro offerte di lavoro</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q14"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q15: Trovato lavoro correlato al corso</h4>
+                            <div class="chart-container">
+                                <canvas id="chart_ds_q15"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            {% else %}
+            <!-- Nessun Dataset Caricato -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-700">Nessun dataset caricato</h3>
+                <p class="text-slate-500 mt-2">Carica un file CSV per visualizzare i grafici.</p>
+            </div>
+            {% endif %}
+
+        </div>
+        <!-- Fine TAB 2: Dataset Caricato -->
+
     </div>
 
     <script>
-        // Elabora i dati dal backend
-        const datiGrezzi = {{ dati|tojson }};
-        
-        // Funzione per contare le risposte
-        function contaRisposte(idDomanda) {
-            const conteggio = {};
-            datiGrezzi.forEach(item => {
-                if (item.id === idDomanda && item.risposta) {
-                    const risposta = item.risposta;
-                    conteggio[risposta] = (conteggio[risposta] || 0) + 1;
-                }
-            });
-            return conteggio;
-        }
-
-        // Configurazione colori
-        const coloriPalette = [
-            'rgba(79, 70, 229, 0.8)',   // Indigo
-            'rgba(59, 130, 246, 0.8)',  // Blue
-            'rgba(16, 185, 129, 0.8)',  // Green
-            'rgba(245, 158, 11, 0.8)',  // Orange
-            'rgba(239, 68, 68, 0.8)',   // Red
-            'rgba(139, 92, 246, 0.8)',  // Purple
-            'rgba(236, 72, 153, 0.8)',  // Pink
-        ];
-
-        // Funzione per creare grafico
-        function creaGrafico(canvasId, dati, titolo) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return;
-
-            const labels = Object.keys(dati);
-            const values = Object.values(dati);
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Numero Risposte',
-                        data: values,
-                        backgroundColor: coloriPalette.slice(0, labels.length),
-                        borderColor: coloriPalette.slice(0, labels.length).map(c => c.replace('0.8', '1')),
-                        borderWidth: 2,
-                        borderRadius: 8,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            padding: 12,
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            borderColor: 'rgba(100, 116, 139, 0.2)',
-                            borderWidth: 1
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
-                                font: { size: 12 }
-                            },
-                            grid: {
-                                color: 'rgba(148, 163, 184, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                font: { size: 11 }
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Crea i grafici per tutte le 15 domande
-        if (datiGrezzi.length > 0) {
-            // Dati Demografici
-            creaGrafico('chart_q1', contaRisposte('q1'), 'Genere');
-            creaGrafico('chart_q2', contaRisposte('q2'), 'Area Italia');
-            creaGrafico('chart_q3', contaRisposte('q3'), 'Fascia Età');
-            
-            // Autoconsapevolezza
-            creaGrafico('chart_q4', contaRisposte('q4'), 'Chiaro chi sono');
-            creaGrafico('chart_q5', contaRisposte('q5'), 'Punti di forza');
-            creaGrafico('chart_q6', contaRisposte('q6'), 'Colmare lacune');
-            creaGrafico('chart_q7', contaRisposte('q7'), 'Rispecchiare valori');
-            
-            // Obiettivi e Competenze
-            creaGrafico('chart_q8', contaRisposte('q8'), 'Obiettivi chiari');
-            creaGrafico('chart_q9', contaRisposte('q9'), 'Competenze tecniche');
-            creaGrafico('chart_q10', contaRisposte('q10'), 'Soft skills');
-            creaGrafico('chart_q11', contaRisposte('q11'), 'Nuove skill');
-            
-            // Ricerca Lavoro
-            creaGrafico('chart_q12', contaRisposte('q12'), 'Esploro opportunità');
-            creaGrafico('chart_q13', contaRisposte('q13'), 'Percorso con HR');
-            creaGrafico('chart_q14', contaRisposte('q14'), 'Monitoro offerte');
-            creaGrafico('chart_q15', contaRisposte('q15'), 'Trovato lavoro');
-        }
+        // Passa i dati dal backend al JavaScript
+        const datiGrezzi = {{ dati|tojson|safe }};
+        const datiUploaded = {{ dati_uploaded|tojson|safe }};
     </script>
+    
+    <!-- Carica il file JavaScript esterno -->
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 
 </body>
 </html>
