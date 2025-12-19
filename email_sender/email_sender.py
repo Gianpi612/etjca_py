@@ -32,10 +32,10 @@ SENDER_EMAIL = "LA_TUA_EMAIL_GMAIL"
 APP_PASSWORD = "LA_TUA_APP_PASSWORD"
 SURVEY_URL = "http://127.0.0.1:5000"
 
-with open("test/email_list.txt", "r") as f:
+with open("email_sender/email_list.txt", "r") as f:
     recipients = [line.strip() for line in f if line.strip()]
 
-with open("test/email_template.html", "r", encoding="utf-8") as f:
+with open("email_sender/email_template.html", "r", encoding="utf-8") as f:
     html_content = f.read()
 
 # Invia email a ciascun destinatario
