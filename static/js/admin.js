@@ -45,6 +45,7 @@ function creaGrafico(canvasId, dati, titolo) {
 
     const labels = Object.keys(dati);
     const values = Object.values(dati);
+    const totale = values.reduce((a, b) => a + b, 0);
 
     new Chart(ctx, {
         type: 'bar',
@@ -62,6 +63,11 @@ function creaGrafico(canvasId, dati, titolo) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 30  // Spazio sopra per le percentuali
+                }
+            },
             plugins: {
                 legend: {
                     display: false
@@ -72,7 +78,31 @@ function creaGrafico(canvasId, dati, titolo) {
                     titleFont: { size: 14, weight: 'bold' },
                     bodyFont: { size: 13 },
                     borderColor: 'rgba(100, 116, 139, 0.2)',
-                    borderWidth: 1
+                    borderWidth: 1,
+                    callbacks: {
+                        // Mostra valore e percentuale nel tooltip
+                        label: function(context) {
+                            const valore = context.parsed.y;
+                            const percentuale = ((valore / totale) * 100).toFixed(1);
+                            return `${valore} risposte (${percentuale}%)`;
+                        }
+                    }
+                },
+                // Plugin per mostrare percentuali sulle barre
+                datalabels: {
+                    display: true,
+                    color: '#1e293b',
+                    font: {
+                        weight: 'bold',
+                        size: 11
+                    },
+                    formatter: function(value, context) {
+                        const percentuale = ((value / totale) * 100).toFixed(1);
+                        return percentuale + '%';
+                    },
+                    anchor: 'end',
+                    align: 'end',
+                    offset: -2
                 }
             },
             scales: {
@@ -95,7 +125,8 @@ function creaGrafico(canvasId, dati, titolo) {
                     }
                 }
             }
-        }
+        },
+        plugins: [ChartDataLabels] // Abilita il plugin per le percentuali
     });
 }
 
@@ -115,8 +146,45 @@ function showTab(tabName) {
     button.classList.remove('text-slate-500');
 }
 
+// Dark Mode Toggle
+function toggleDarkMode() {
+    const html = document.documentElement;
+    const isDark = html.classList.toggle('dark');
+    
+    // Salva preferenza in localStorage
+    localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+    
+    // Aggiorna icona
+    updateDarkModeIcon(isDark);
+}
+
+function updateDarkModeIcon(isDark) {
+    const moonIcon = document.getElementById('moon-icon');
+    const sunIcon = document.getElementById('sun-icon');
+    
+    if (isDark) {
+        moonIcon.classList.add('hidden');
+        sunIcon.classList.remove('hidden');
+    } else {
+        moonIcon.classList.remove('hidden');
+        sunIcon.classList.add('hidden');
+    }
+}
+
+// Carica preferenza dark mode all'avvio
+function loadDarkModePreference() {
+    const darkMode = localStorage.getItem('darkMode');
+    if (darkMode === 'enabled') {
+        document.documentElement.classList.add('dark');
+        updateDarkModeIcon(true);
+    }
+}
+
 // Inizializzazione quando il DOM è carico
 document.addEventListener('DOMContentLoaded', function() {
+    // Carica preferenza dark mode
+    loadDarkModePreference();
+    
     // Crea i grafici per risposte raccolte (formato lungo)
     if (typeof datiGrezzi !== 'undefined' && datiGrezzi.length > 0) {
         creaGrafico('chart_q1', contaRisposte('q1', datiGrezzi), 'Genere');

@@ -1,21 +1,38 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
         .chart-container { position: relative; height: 300px; }
     </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            border: '#334155'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 min-h-screen transition-colors duration-200">
 
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
+    <header class="bg-white dark:bg-dark-card border-b border-slate-200 dark:border-dark-border shadow-sm sticky top-0 z-10 transition-colors duration-200">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
@@ -24,21 +41,30 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-slate-800">Dashboard Admin</h1>
-                    <p class="text-xs text-slate-500">Gestione risposte questionario</p>
+                    <h1 class="text-xl font-bold text-slate-800 dark:text-white">Dashboard Admin</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Gestione risposte questionario</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
-                <a href="/" class="text-sm text-slate-600 hover:text-indigo-600 transition">
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-300">
+                    <svg id="moon-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+                
+                <a href="/" class="text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                     Home
                 </a>
                 <form method="POST" action="/reset-data" onsubmit="return confirm('Sei sicuro di voler cancellare tutti i dati? Questa azione è irreversibile!');" class="inline">
-                    <button type="submit" class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-semibold transition">
+                    <button type="submit" class="px-4 py-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-lg text-sm font-semibold transition">
                         Reset Dati
                     </button>
                 </form>
-                <a href="/admin-logout" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-semibold transition">
+                <a href="/admin-logout" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold transition">
                     Logout
                 </a>
             </div>
@@ -46,63 +72,55 @@
     </header>
 
     <div class="max-w-7xl mx-auto px-6 py-8">
-
-        <!-- Tab Navigation -->
         <div class="mb-8">
-            <div class="flex gap-4 border-b border-slate-200">
-                <button onclick="showTab('risposte')" id="tab-risposte" class="tab-button px-6 py-3 font-semibold text-indigo-600 border-b-2 border-indigo-600">
+            <div class="flex gap-4 border-b border-slate-200 dark:border-dark-border">
+                <button onclick="showTab('risposte')" id="tab-risposte" class="tab-button px-6 py-3 font-semibold text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 transition">
                     📊 Risposte Raccolte
                 </button>
-                <button onclick="showTab('dataset')" id="tab-dataset" class="tab-button px-6 py-3 font-semibold text-slate-500 hover:text-indigo-600">
+                <button onclick="showTab('dataset')" id="tab-dataset" class="tab-button px-6 py-3 font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                     📁 Dataset Caricato
                 </button>
             </div>
         </div>
 
-        <!-- TAB 1: Risposte Raccolte -->
         <div id="content-risposte" class="tab-content">
-
-        <!-- Statistiche -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Totale Risposte -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-6 transition-colors duration-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-slate-600 font-semibold">Totale Risposte</p>
-                        <p class="text-3xl font-bold text-slate-800 mt-2">{{ dati|length }}</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 font-semibold">Totale Risposte</p>
+                        <p class="text-3xl font-bold text-slate-800 dark:text-white mt-2">{{ dati|length }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <!-- Stato -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-6 transition-colors duration-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-slate-600 font-semibold">Stato</p>
-                        <p class="text-lg font-bold text-emerald-600 mt-2">Attivo</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 font-semibold">Stato</p>
+                        <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400 mt-2">Attivo</p>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <!-- Export -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-6 transition-colors duration-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-slate-600 font-semibold">Export Dati</p>
-                        <p class="text-sm text-slate-500 mt-2">Scarica CSV</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 font-semibold">Export Dati</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Scarica CSV</p>
                     </div>
-                    <a href="/export-csv" class="w-12 h-12 rounded-full bg-blue-100 hover:bg-blue-200 flex items-center justify-center transition">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="/export-csv" class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 flex items-center justify-center transition">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                     </a>
@@ -110,182 +128,75 @@
             </div>
         </div>
 
-        <!-- Sezione Grafici -->
         {% if dati %}
         <div class="mb-8">
-            <h2 class="text-2xl font-bold text-slate-800 mb-6">Analisi Risposte</h2>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-6">Analisi Risposte</h2>
             
-            <!-- Sezione: Dati Demografici -->
+            {% set grafici = [
+                ('Dati Demografici', '📊', [
+                    ('Genere', 'q1'),
+                    ('Area Italia', 'q2'),
+                    ('Fascia d\'Età', 'q3'),
+                    ('Titolo di Studio', 'q_titolo')
+                ]),
+                ('Autoconsapevolezza Professionale', '🎯', [
+                    ('Q4: Chiaro chi sono professionalmente', 'q4'),
+                    ('Q5: Conosco i miei punti di forza', 'q5'),
+                    ('Q6: Lavoro per colmare lacune', 'q6'),
+                    ('Q7: Lavoro deve rispecchiare valori', 'q7')
+                ]),
+                ('Obiettivi e Competenze', '💼', [
+                    ('Q8: Obiettivi professionali chiari', 'q8'),
+                    ('Q9: Competenze tecniche', 'q9'),
+                    ('Q10: Soft skills', 'q10'),
+                    ('Q11: Investo tempo in nuove skill', 'q11')
+                ]),
+                ('Ricerca Lavoro e Supporto', '🔍', [
+                    ('Q12: Esploro opportunità nel settore', 'q12'),
+                    ('Q13: Utile percorso con HR', 'q13'),
+                    ('Q14: Monitoro offerte di lavoro', 'q14'),
+                    ('Q15: Trovato lavoro correlato al corso', 'q15')
+                ])
+            ] %}
+
+            {% for sezione, emoji, domande in grafici %}
             <div class="mb-6">
-                <h3 class="text-lg font-semibold text-indigo-600 mb-4">📊 Dati Demografici</h3>
+                <h3 class="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mb-4">{{ emoji }} {{ sezione }}</h3>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Genere</h4>
+                    {% for titolo, id in domande %}
+                    <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-6 transition-colors duration-200">
+                        <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4">{{ titolo }}</h4>
                         <div class="chart-container">
-                            <canvas id="chart_q1"></canvas>
+                            <canvas id="chart_{{ id }}"></canvas>
                         </div>
                     </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Area Italia</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q2"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Fascia d'Età</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q3"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Titolo di Studio</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q_titolo"></canvas>
-                        </div>
-                    </div>
-
+                    {% endfor %}
                 </div>
             </div>
-
-            <!-- Sezione: Autoconsapevolezza -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold text-indigo-600 mb-4">🎯 Autoconsapevolezza Professionale</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q4: Chiaro chi sono professionalmente</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q4"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q5: Conosco i miei punti di forza</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q5"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q6: Lavoro per colmare lacune</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q6"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q7: Lavoro deve rispecchiare valori</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q7"></canvas>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Sezione: Obiettivi e Competenze -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold text-indigo-600 mb-4">💼 Obiettivi e Competenze</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q8: Obiettivi professionali chiari</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q8"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q9: Competenze tecniche</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q9"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q10: Soft skills</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q10"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q11: Investo tempo in nuove skill</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q11"></canvas>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Sezione: Ricerca Lavoro -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold text-indigo-600 mb-4">🔍 Ricerca Lavoro e Supporto</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q12: Esploro opportunità nel settore</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q12"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q13: Utile percorso con HR</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q13"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q14: Monitoro offerte di lavoro</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q14"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                        <h4 class="text-md font-semibold text-slate-800 mb-4">Q15: Trovato lavoro correlato al corso</h4>
-                        <div class="chart-container">
-                            <canvas id="chart_q15"></canvas>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
+            {% endfor %}
         </div>
-        {% endif %}
 
-        <!-- Tabella Risposte -->
-        {% if dati %}
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
-                <h2 class="text-lg font-bold text-slate-800">Risposte Raccolte</h2>
-                <p class="text-sm text-slate-600 mt-1">Visualizza tutte le risposte del questionario</p>
+        <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border overflow-hidden transition-colors duration-200">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-slate-800">
+                <h2 class="text-lg font-bold text-slate-800 dark:text-white">Risposte Raccolte</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Visualizza tutte le risposte del questionario</p>
             </div>
-
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
-                    <thead class="bg-slate-50 border-b border-slate-200">
+                    <thead class="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-dark-border">
                         <tr>
-                            <th class="px-6 py-4 text-left font-semibold text-slate-700">ID</th>
-                            <th class="px-6 py-4 text-left font-semibold text-slate-700">Domanda</th>
-                            <th class="px-6 py-4 text-left font-semibold text-slate-700">Risposta</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-300">ID</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-300">Domanda</th>
+                            <th class="px-6 py-4 text-left font-semibold text-slate-700 dark:text-slate-300">Risposta</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                         {% for r in dati %}
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="px-6 py-4 text-slate-600 font-mono text-xs">{{ r.id }}</td>
-                            <td class="px-6 py-4 text-slate-800">{{ r.text }}</td>
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                            <td class="px-6 py-4 text-slate-600 dark:text-slate-400 font-mono text-xs">{{ r.id }}</td>
+                            <td class="px-6 py-4 text-slate-800 dark:text-slate-200">{{ r.text }}</td>
                             <td class="px-6 py-4">
-                                <span class="inline-block px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 font-semibold text-xs">
+                                <span class="inline-block px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-semibold text-xs">
                                     {{ r.risposta }}
                                 </span>
                             </td>
@@ -296,105 +207,84 @@
             </div>
         </div>
         {% else %}
-        <!-- Nessun Dato -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-            <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-12 text-center transition-colors duration-200">
+            <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
             </div>
-            <h3 class="text-lg font-bold text-slate-700">Nessuna risposta disponibile</h3>
-            <p class="text-slate-500 mt-2">Le risposte compilate appariranno qui.</p>
+            <h3 class="text-lg font-bold text-slate-700 dark:text-slate-200">Nessuna risposta disponibile</h3>
+            <p class="text-slate-500 dark:text-slate-400 mt-2">Le risposte compilate appariranno qui.</p>
         </div>
         {% endif %}
-
         </div>
-        <!-- Fine TAB 1: Risposte Raccolte -->
 
-        <!-- TAB 2: Dataset Caricato -->
         <div id="content-dataset" class="tab-content hidden">
-
-            <!-- Upload Section -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 mb-8">
+            <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-8 mb-8 transition-colors duration-200">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800">Carica Dataset Esterno</h2>
-                        <p class="text-sm text-slate-600 mt-1">Carica un CSV con le stesse colonne per analisi comparativa</p>
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-white">Carica Dataset Esterno</h2>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Carica un CSV con le stesse colonne per analisi comparativa</p>
                     </div>
                     {% if dati_uploaded %}
                     <form method="POST" action="/delete-dataset" class="inline">
-                        <button type="submit" class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-semibold transition">
+                        <button type="submit" class="px-4 py-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-lg text-sm font-semibold transition">
                             🗑️ Elimina Dataset
                         </button>
                     </form>
                     {% endif %}
                 </div>
-
                 <form method="POST" action="/upload-dataset" enctype="multipart/form-data" class="flex gap-4 items-end">
                     <div class="flex-1">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">
-                            Seleziona File CSV
-                        </label>
-                        <input 
-                            type="file" 
-                            name="dataset" 
-                            accept=".csv"
-                            required
-                            class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition outline-none"
-                        >
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Seleziona File CSV</label>
+                        <input type="file" name="dataset" accept=".csv" required
+                            class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition outline-none">
                     </div>
-                    <button 
-                        type="submit"
-                        class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition"
-                    >
+                    <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">
                         📤 Carica
                     </button>
                 </form>
-
-                <div class="mt-4 text-xs text-slate-500">
+                <div class="mt-4 text-xs text-slate-500 dark:text-slate-400">
                     <strong>Formato richiesto:</strong> CSV con colonne: q1, q2, q3, q_titolo, q4, q5, ..., q15 (una riga per utente)
                 </div>
             </div>
 
-            <!-- Statistiche Dataset Caricato -->
             {% if dati_uploaded %}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-6 transition-colors duration-200">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-slate-600 font-semibold">Totale Record</p>
-                            <p class="text-3xl font-bold text-slate-800 mt-2">{{ dati_uploaded|length }}</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 font-semibold">Totale Record</p>
+                            <p class="text-3xl font-bold text-slate-800 dark:text-white mt-2">{{ dati_uploaded|length }}</p>
                         </div>
-                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                             </svg>
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-6 transition-colors duration-200">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-slate-600 font-semibold">Stato Dataset</p>
-                            <p class="text-lg font-bold text-emerald-600 mt-2">Caricato</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 font-semibold">Stato Dataset</p>
+                            <p class="text-lg font-bold text-emerald-600 dark:text-emerald-400 mt-2">Caricato</p>
                         </div>
-                        <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-6 transition-colors duration-200">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-slate-600 font-semibold">Tipo</p>
-                            <p class="text-lg font-bold text-slate-700 mt-2">Dataset Esterno</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 font-semibold">Tipo</p>
+                            <p class="text-lg font-bold text-slate-700 dark:text-slate-200 mt-2">Dataset Esterno</p>
                         </div>
-                        <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg>
                         </div>
@@ -402,181 +292,43 @@
                 </div>
             </div>
 
-            <!-- Grafici Dataset -->
             <div class="mb-8">
-                <h2 class="text-2xl font-bold text-slate-800 mb-6">Analisi Dataset Caricato</h2>
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-6">Analisi Dataset Caricato</h2>
                 
-                <!-- Sezione: Dati Demografici -->
+                {% for sezione, emoji, domande in grafici %}
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-indigo-600 mb-4">📊 Dati Demografici</h3>
+                    <h3 class="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mb-4">{{ emoji }} {{ sezione }}</h3>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Genere</h4>
+                        {% for titolo, id in domande %}
+                        <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-6 transition-colors duration-200">
+                            <h4 class="text-md font-semibold text-slate-800 dark:text-white mb-4">{{ titolo }}</h4>
                             <div class="chart-container">
-                                <canvas id="chart_ds_q1"></canvas>
+                                <canvas id="chart_ds_{{ id }}"></canvas>
                             </div>
                         </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Area Italia</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q2"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Fascia d'Età</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q3"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Titolo di Studio</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q_titolo"></canvas>
-                            </div>
-                        </div>
-
+                        {% endfor %}
                     </div>
                 </div>
-
-                <!-- Sezione: Autoconsapevolezza -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-indigo-600 mb-4">🎯 Autoconsapevolezza Professionale</h3>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q4: Chiaro chi sono professionalmente</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q4"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q5: Conosco i miei punti di forza</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q5"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q6: Lavoro per colmare lacune</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q6"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q7: Lavoro deve rispecchiare valori</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q7"></canvas>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Sezione: Obiettivi e Competenze -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-indigo-600 mb-4">💼 Obiettivi e Competenze</h3>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q8: Obiettivi professionali chiari</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q8"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q9: Competenze tecniche</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q9"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q10: Soft skills</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q10"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q11: Investo tempo in nuove skill</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q11"></canvas>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Sezione: Ricerca Lavoro -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-indigo-600 mb-4">🔍 Ricerca Lavoro e Supporto</h3>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q12: Esploro opportunità nel settore</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q12"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q13: Utile percorso con HR</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q13"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q14: Monitoro offerte di lavoro</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q14"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h4 class="text-md font-semibold text-slate-800 mb-4">Q15: Trovato lavoro correlato al corso</h4>
-                            <div class="chart-container">
-                                <canvas id="chart_ds_q15"></canvas>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
+                {% endfor %}
             </div>
             {% else %}
-            <!-- Nessun Dataset Caricato -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-slate-200 dark:border-dark-border p-12 text-center transition-colors duration-200">
+                <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-bold text-slate-700">Nessun dataset caricato</h3>
-                <p class="text-slate-500 mt-2">Carica un file CSV per visualizzare i grafici.</p>
+                <h3 class="text-lg font-bold text-slate-700 dark:text-slate-200">Nessun dataset caricato</h3>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">Carica un file CSV per visualizzare i grafici.</p>
             </div>
             {% endif %}
-
         </div>
-        <!-- Fine TAB 2: Dataset Caricato -->
-
     </div>
 
     <script>
-        // Passa i dati dal backend al JavaScript
         const datiGrezzi = {{ dati|tojson|safe }};
         const datiUploaded = {{ dati_uploaded|tojson|safe }};
     </script>
-    
-    <!-- Carica il file JavaScript esterno -->
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
-
 </body>
 </html>
